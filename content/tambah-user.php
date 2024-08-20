@@ -12,13 +12,15 @@ if (isset($_POST['simpan'])){
     $nama_lengkap = $_POST['nama_lengkap'];
     $email = $_POST['email'];
     $password = sha1($_POST['password']);
-
+    $id_level = $_POST['id_level'];
+    
     if (!$id) {
-        $insert = mysqli_query($koneksi, "INSERT INTO user (nama_lengkap, email, password) VALUES ('$nama_lengkap','$email','$password')");
+        $insert = mysqli_query($koneksi, "INSERT INTO user (nama_lengkap, email, password, id_level) VALUES ('$nama_lengkap','$email','$password','$id_level')");
+        header("location:?pg=user&tambah=berhasil");
     } else {
-        $update = mysqli_query($koneksi, "UPDATE user SET nama_lengkap='$nama_lengkap', email = '$email', password = '$password' WHERE id = '$id'");
+        $update = mysqli_query($koneksi, "UPDATE user SET nama_lengkap = '$nama_lengkap', email = '$email', id_level ='$id_level', password = '$password' WHERE id = '$id'");
     }
-    header("location:?pg=user&tambah=berhasil");
+    header("location:?pg=user&edit=berhasil");
 }
 
 if (isset($_GET['delete'])){
@@ -28,6 +30,9 @@ if (isset($_GET['delete'])){
     header("location:?pg=user&hapus=berhasil");
 }
 
+$level = mysqli_query($koneksi, "SELECT * FROM level ORDER BY id DESC");
+
+
 ?>
 <div class="container mt-5">
     <div class="row">
@@ -36,6 +41,15 @@ if (isset($_GET['delete'])){
                 <div class="card-header">Data User</div>
                 <div class="card-body">
                     <form action="" method="post">
+                        <div class="mb-3">
+                            <label for="" class="form-label">Level</label>
+                            <select name="id_level" id="" class="form-control">
+                                 <option value="">Pilih Level</option>
+                                 <?php while($rowlevel = mysqli_fetch_assoc($level)) : ?>
+                                    <option <?php echo isset($rowEdit['id_level']) ? ($rowEdit['id_level'] == $rowlevel['id']) ? 'selected' : '' : '' ?> value="<?php echo $rowlevel['id'] ?>"><?php echo $rowlevel['nama_level'] ?></option>
+                                    <?php endwhile ?>
+                            </select>
+                        </div>
                         <div class="mb-3">
                             <label for="" class="form-label">Nama Lengkap</label>
                             <input type="text" value="<?php echo ($rowEdit['nama_lengkap'] ?? '') ?>" class="form-control" name="nama_lengkap">
